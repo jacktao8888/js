@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<style>
+		select {
+			padding: 5px;
+			border-radius: 5px;
+		}
+	</style>
+</head>
+<body>
+	<select name="" id="">
+		<option value="">请选择省份</option>
+	</select>
+	<select name="" id="">
+		<option value="">请选择市区</option>
+	</select>
+	<select name="" id="">
+		<option value="">请选择区域</option>
+	</select>
+
+	<script type="text/javascript" src="03ajaxUnit.js"></script>
+	<script type="text/javascript">
+
+		var select = document.querySelectorAll('select');
+
+		var cityData;
+		var shiData;
+
+		// 首先第一步  不用想  想把数据拿过来，将省份填进去
+		$.ajax({
+			type : 'get',
+			url : 'demo.php',
+			success : function(data){
+				cityData = JSON.parse(data);
+
+				for(var i = 0; i < cityData.length; i++){
+
+					var shengfen = cityData[i].name;
+
+					var option = document.createElement('option');
+
+					option.innerHTML = shengfen;
+
+					select[0].appendChild(option);
+
+				}
+
+			}
+		})
+		// 第二步 ：当你选择了一个新的省份，重置掉 市区 和区域
+		// 根据新的省份选择对应的市区  区域
+		// change当表单里面的值发生改变的时候，并且失去焦点的时候触发
+		// input事件是在表单输入的时候不断触发
+		select[0].onchange = function(){
+
+			// 重置掉 市区 和区域
+			select[1].innerHTML = '<option value="">请选择市区</option>';
+			select[2].innerHTML = '<option value="">请选择区域</option>';
+
+			// 得到选择的城市
+			var shengfen = this.value;
+
+			// 根据选择的省份找这个省份对应的市区
+
+			for(var i = 0; i < cityData.length; i++){
+				if(shengfen == cityData[i].name){
+
+					shiData = cityData[i].city;
+					for(var j = 0; j < shiData.length; j++){
+						var option = document.createElement('option');
+						option.innerHTML = shiData[j].name;
+
+						select[1].appendChild(option);
+					}
+				}
+			}
+		}
+		// 第三步 ：当你选择一个新的市区的时候 重置掉区域
+		// 根据新的市区选择对应的区域
+		select[1].onchange = function(){
+			// 重置区域
+			select[2].innerHTML = '<option value="">请选择区域</option>';
+
+			var nowShiqu = this.value;
+
+			// 根据对应的市区找到对应的区域
+			for(var i = 0; i < shiData.length; i++){
+				if(nowShiqu == shiData[i].name){
+					var quyu = shiData[i].area;
+					for(var j = 0; j < quyu.length; j++){
+
+						var option = document.createElement('option');
+
+						option.innerHTML = quyu[j];
+
+						select[2].appendChild(option);
+					}
+				}
+			}
+		}
+
+
+	</script>
+</body>
+</html>
